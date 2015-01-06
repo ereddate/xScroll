@@ -177,6 +177,14 @@
 				}
 				xScroll.orientation = window.orientation && (((window.orientation == 90 || window.orientation == -90) && orientation("vertical")) || ((window.orientation == 180 || window.orientation == 0) && orientation("horizontal")));
 
+				if (typeof define === "function" && define.amd) {
+					define("xscroll", [], function() {
+						return xScroll;
+					});
+				}
+
+				window.xScroll = xScroll;
+
 				jQuery.fn.xScroll = function(options) {
 					xScroll(jQuery.extend({
 						parent: "main",
