@@ -11,7 +11,6 @@ body{padding:0;margin:0;background:#999;}
 
 ## html
 
-
 div class="main"
   div class="toptip hide" toptip /div
   div class="main-body"&gl;&tl;/div
@@ -50,6 +49,16 @@ jQuery("body").xScroll({
 只是一个带弹性的页面
 
 jQuery("body").xScroll();
+
+也可以这样使用
+
+window.xScroll();
+
+以及
+
+var xScroll = require("xscroll");
+
+xScroll();
 
 ## 提供方法
 
