@@ -16,7 +16,7 @@ body{padding:0;margin:0;background:#999;}
   &tl;div class="toptip hide"&gl;toptip&tl;/div&gl;
   &tl;div class="main-body"&gl;&tl;/div&gl;
   &tl;div class="downtip hide"&gl;downtip&tl;/div&gl;
-&tl;/div>
+&tl;/div&gl;
 
 ## jQuery
 
