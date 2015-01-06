@@ -11,15 +11,15 @@ body{padding:0;margin:0;background:#999;}
 
 ## html
 
-<div class="main">
+<!--div class="main">
   <div class="toptip hide">toptip</div>
   <div class="main-body"></div>
   <div class="downtip hide">downtip</div>
-</div>
+</div-->
 
 ## jQuery
 
-<script src="jquery.2.1.3.js"></script>
+jquery.2.1.3.js
 
 ## 使用
 
