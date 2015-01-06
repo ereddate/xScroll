@@ -11,11 +11,12 @@ body{padding:0;margin:0;background:#999;}
 
 ## html
 
-<!--div class="main">
-  <div class="toptip hide">toptip</div>
-  <div class="main-body"></div>
-  <div class="downtip hide">downtip</div>
-</div-->
+
+&tl;div class="main&gl;
+  &tl;div class="toptip hide"&gl;toptip&tl;/div&gl;
+  &tl;div class="main-body"&gl;&tl;/div&gl;
+  &tl;div class="downtip hide"&gl;downtip&tl;/div&gl;
+&tl;/div>
 
 ## jQuery
 
