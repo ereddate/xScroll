@@ -51,4 +51,15 @@ jQuery("body").xScroll({
 
 jQuery("body").xScroll();
 
+## 提供方法
+
+refresh 刷新初始化
+
+hasTouch 是否支持touch
+
+orientation 判断是否横、竖屏
+
+showtoptip 显示上面的提示
+
+showdowntip 显示下面的提示
 
