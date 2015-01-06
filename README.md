@@ -45,3 +45,10 @@ jQuery("body").xScroll({
   }
 });
 
+或者
+
+只是一个带弹性的页面
+
+jQuery("body").xScroll();
+
+
