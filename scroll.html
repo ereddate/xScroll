@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta charset="utf-8" />
+		<style>
+			body{padding:0;margin:0;background:#999;}
+			.main{position:relative;height:auto;background: #999;}
+			.main-body{position: absolute;top:0;left:0;background: #fff;width:100%;z-index: 2;height:1000px;}
+			.toptip{position: absolute;top:30px;left:25%;z-index: 1;right: 25%;text-align: center;}
+			.downtip{position: absolute;bottom:30px;left:25%;z-index: 1;right: 25%;text-align: center;}
+			.hide{display:none;}
+		</style>
+	</head>
+	<body>
+		<div class="main">
+			<div class="toptip hide">toptip</div>
+			<div class="main-body"></div>
+			<div class="downtip hide">downtip</div>
+		</div>
+		<script src="jquery.2.1.3.js"></script>
+		<script>
+			jQuery(function() {
+				var xScroll = function(options) {
+					return xScroll.fn.init(options);
+				};
+				xScroll.fn = xScroll.prototype = {
+					init: function(options) {
+						this.snap = 150;
+						jQuery.extend(this, options);
+						var self = this;
+						_init(self);
+						jQuery(window).on("resize orientationchange", function(){
+							if (this.orientation && (this.orientation == 180 || this.orientation == 0)) 
+								xScroll.orientation =  "horizontal"; 
+							else if(this.orientation && (this.orientation==90||this.orientation==-90))
+								xScroll.orientation = "vertical";
+							_init(self);
+						});
+						return this;
+					},
+					refresh: function(){
+						_init(this);
+					}
+				};
+				xScroll.fn.init.prototype = xScroll.fn;
+
+				function _init(target){
+					jQuery("." + target.parent).height(jQuery(document).height());
+					jQuery("." + target.body).width(jQuery("." + target.parent).width()).off("touchstart").on("touchstart", function(e) {
+						_touchStart.call(this, e, target);
+					}).off("touchmove").on("touchmove", function(e) {
+						_touchMove.call(this, e, target);
+					}).off("touchend").on("touchend", function(e) {
+						_touchEnd.call(this, e, target);
+					});
+				}
+
+				function _gooffset(target, type){
+					jQuery(this).stop(1, 1).animate({
+						top: 0,
+						left: 0
+					}, "fast", function() {
+						_hide(target);
+					});
+				}
+
+				function _hide(target) {
+					var selector = target.toptip && target.toptip.cls || "";
+					selector = selector != "" && target.downtip && target.downtip.cls ? selector = selector + "," + target.downtip.cls : selector;
+					target.isHandle && jQuery(selector).addClass(target.hide);
+				}
+
+				function _touchStart(e, target) {
+					var touchs = e.touches || e.originalEvent.touches,
+						touch = touchs[0];
+					//console.log(touch)
+					jQuery(this).data({
+						"touchX": touch.pageX,
+						"touchY": touch.pageY
+					});
+					_hide(target);
+				}
+
+				function _touchMove(e, target) {
+					var touchs = e.touches || e.originalEvent.touches,
+						touch = touchs[0];
+					//console.log(touch)
+					var oldX = jQuery(this).data("touchX"),
+						oldY = jQuery(this).data("touchY");
+					var moveX = touch.pageX - oldX,
+						moveY = touch.pageY - oldY;
+					jQuery(this).stop(1,1).animate(target.isHandle ? {
+						top: moveY,
+						left: 0
+					} : {
+						top: moveY,
+						left: moveX
+					});
+					var top = jQuery(this).offset().top;
+					jQuery(this).data(target.isHandle ? {
+						"endX": 0,
+						"endY": moveY,
+						"tempX": 0,
+						"tempY": 8
+					} : {
+						"endX": moveX,
+						"endY": moveY,
+						"tempX": 0,
+						"tempY": 8
+					});
+					if (target.isHandle) {
+						if (target.toptip) {
+							if (top > 0 && moveY > target.snap / 2) xScroll.showtoptip.call(target, target.toptip.tip[0]);
+							if (top > 0 && moveY > target.snap) xScroll.showtoptip.call(target);
+						}
+						if (target.downtip) {
+							if (top < 0 && 0 - moveY > target.snap / 2) xScroll.showdowntip.call(target, target.downtip.tip[0]);
+							if (top < 0 && 0 - moveY > target.snap) xScroll.showdowntip.call(target);
+						}
+					}
+				}
+
+				function _touchEnd(e, target) {
+					var endY = jQuery(this).data("endY");
+					var top = jQuery(this).offset().top;
+					console.log("top," + top)
+					if (target.isHandle) {
+						if (top > 0 && endY > target.snap && target.toptip) {
+							_topupdate.call(this, target);
+							return;
+						}
+						if (top < 0 && 0 - endY > target.snap && target.downtip) {
+							_downupdate.call(this, target);
+							return;
+						}
+					}
+					_gooffset.call(this, target, "top");
+				}
+
+				function _topupdate(target) {
+					console.log("topUpdate")
+					xScroll.showtoptip.call(target, target.toptip.tip[2]);
+					var self = this;
+					jQuery(this).stop(1, 1).animate({
+						top: jQuery(this).data("tempY"),
+						left: 0
+					});
+					target.toptip.handle(function() {
+						_gooffset.call(self, target, "top");
+					});
+				}
+
+				function _downupdate(target) {
+					console.log("downUpdate")
+					xScroll.showdowntip.call(target, target.downtip.tip[2]);
+					var self = this;
+					jQuery(this).stop(1, 1).animate({
+						top: "-" + jQuery(this).data("tempY"),
+						left: 0
+					});
+					target.downtip.handle(function() {
+						_gooffset.call(self, target, "down");
+					});
+				}
+
+				xScroll.showtoptip = function(text) {
+					this.toptip && jQuery(this.toptip.cls).removeClass(this.hide).html(text || this.toptip.tip[1]);
+				};
+				xScroll.showdowntip = function(text) {
+					this.downtip && jQuery(this.downtip.cls).removeClass(this.hide).html(text || this.downtip.tip[1]);
+				};
+				xScroll.hasTouch= 'ontouchstart' in window;
+				function orientation(text){
+					xScroll.orientation = text;
+					return true;
+				}
+				xScroll.orientation = window.orientation && (((window.orientation == 90 || window.orientation == -90) && orientation("vertical")) || ((window.orientation == 180 || window.orientation == 0) && orientation("horizontal")));
+
+				jQuery.fn.xScroll = function(options) {
+					xScroll(jQuery.extend({
+						parent: "main",
+						body: "main-body",
+						hide: "hide"
+					}, (
+						options ? jQuery.extend((options.tophandle ? {
+							isHandle: true,
+							toptip: {
+								cls: ".toptip",
+								tip: ["向下拉动刷新", "松开刷新", "正在加载..."],
+								handle: function(end) {
+									options.tophandle(end);
+								}
+							}
+						} : {}), (options.downhandle ? {
+							isHandle: true,
+							downtip: {
+								cls: ".downtip",
+								tip: ["向上拉动加载更多", "松开加载更多", "正在加载..."],
+								handle: function(end) {
+									options.downhandle(end);
+								}
+							}
+						} : {})) : {
+							isHandle: false
+						})));
+					return this;
+				};
+
+				jQuery("body").xScroll({
+					tophandle: function(end) {
+						end();
+					},
+					downhandle: function(end) {
+						end();
+					}
+				});
+
+			});
+		</script>
+	</body>
+</html>
